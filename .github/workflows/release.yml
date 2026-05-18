@@ -1,0 +1,129 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Release
+
+# Cuts a GitHub Release for v* tags. Cross-compiles the MCP server
+# (cmd/mcp-server) and the CLI demo (cmd/demo) for the common platforms
+# and attaches them as release assets so users can drop the binaries
+# straight into their PATH (or .mcp.json command path) without cloning:
+#
+#   curl -L -o mcp-server \
+#     https://github.com/gke-demos/go-runtime-sandbox/releases/download/<tag>/mcp-server-linux-amd64
+#   chmod +x mcp-server
+#
+# The runtime container image is built in parallel by image.yml on the
+# same tag push.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build binaries against (e.g. v0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write   # required to create the release + upload assets
+
+env:
+  GO_VERSION: '1.26'
+
+jobs:
+  release:
+    name: build binaries & create release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [[ -n "${{ inputs.tag }}" ]]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Cross-compile mcp-server and demo
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          mkdir -p dist
+          LDFLAGS="-s -w -X main.version=${TAG}"
+          for bin in mcp-server demo; do
+            for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
+              os="${target%/*}"
+              arch="${target#*/}"
+              ext=""
+              [[ "$os" == "windows" ]] && ext=".exe"
+              out="dist/${bin}-${os}-${arch}${ext}"
+              echo "building ${out}"
+              CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" \
+                go build -trimpath -ldflags="${LDFLAGS}" -o "$out" "./cmd/${bin}"
+            done
+          done
+          (cd dist && sha256sum * > SHA256SUMS)
+          ls -la dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            dist/*
+          body: |
+            ## Install
+
+            **Container image** (runtime sandbox; pulled by Kubernetes):
+
+            ```
+            ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
+            ```
+
+            **MCP server binary** (runs on your developer machine; point your
+            `.mcp.json` `command` at it):
+
+            ```bash
+            # Linux x86_64
+            curl -L -o mcp-server \
+              https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag }}/mcp-server-linux-amd64
+            chmod +x mcp-server
+            ```
+
+            See the [MCP server docs](https://gke-demos.github.io/go-runtime-sandbox/docs/mcp/)
+            for client-specific registration (Claude Code, Gemini CLI).
+
+            **Demo CLI binary** (optional; runs the same end-to-end flow
+            as `cmd/demo`):
+
+            ```bash
+            curl -L -o demo \
+              https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag }}/demo-linux-amd64
+            chmod +x demo
+            ```
+
+            All binaries are also published for `linux/arm64`, `darwin/amd64`,
+            `darwin/arm64`, and `windows/amd64`. `SHA256SUMS` carries the
+            checksums.

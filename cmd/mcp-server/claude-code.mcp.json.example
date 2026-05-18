@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "go-runtime-sandbox": {
+      "command": "/ABSOLUTE/PATH/TO/go-runtime-sandbox/bin/mcp-server",
+      "args": [
+        "--namespace=default",
+        "--template=go-runtime-template"
+      ]
+    }
+  }
+}

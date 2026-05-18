@@ -1,0 +1,35 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# SandboxWarmPool: keeps N pre-warmed sandboxes ready so the first
+# tool call from an agent doesn't pay the ~8-10s cold-start cost of
+# pod scheduling + readiness. Apply AFTER the SandboxTemplate (the
+# pool references it by name).
+#
+# Tune `replicas` to your expected concurrent-session count plus
+# headroom for replenishment. `OnReplenish` (the default below)
+# means a pool slot is only recreated after the previous one is
+# claimed; `Recreate` rotates them more aggressively when the
+# template changes.
+apiVersion: extensions.agents.x-k8s.io/v1alpha1
+kind: SandboxWarmPool
+metadata:
+  name: go-runtime-warmpool
+  namespace: default
+spec:
+  replicas: 2
+  sandboxTemplateRef:
+    name: go-runtime-template
+  updateStrategy:
+    type: OnReplenish
