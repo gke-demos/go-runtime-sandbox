@@ -75,7 +75,15 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.1.6
+          # `goinstall` builds golangci-lint with the project's Go
+          # toolchain (set up by actions/setup-go above), so the
+          # binary's Go version always matches our `go 1.26` directive.
+          # Avoids the "Go language version used to build golangci-lint
+          # is lower than the targeted Go version" failure mode that
+          # bites every time Go ships a new release ahead of the
+          # action's pre-built binary cadence.
+          install-mode: goinstall
+          version: v2.12.1
 
   tidy:
     name: go mod tidy is clean
