@@ -49,9 +49,23 @@ For GKE, see [`docs/howto.md`](./docs/howto.md) — uses the addon
 
 ## Quick start (MCP, for an agent)
 
+Get the `mcp-server` binary — either grab a pre-built one from the
+[latest release][rel] (no Go toolchain required):
+
+```bash
+# Linux x86_64 — change the suffix for darwin-amd64, darwin-arm64, linux-arm64, windows-amd64
+curl -fL -o ./bin/mcp-server \
+  https://github.com/gke-demos/go-runtime-sandbox/releases/latest/download/mcp-server-linux-amd64
+chmod +x ./bin/mcp-server
+```
+
+…or build from source:
+
 ```bash
 go build -o ./bin/mcp-server ./cmd/mcp-server
 ```
+
+[rel]: https://github.com/gke-demos/go-runtime-sandbox/releases/latest
 
 Ready-made config samples for both Claude Code and Gemini CLI live in
 [`cmd/mcp-server/`](./cmd/mcp-server/). Pick the one that matches your

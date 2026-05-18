@@ -41,7 +41,18 @@ See [howto.md → Picking a runtime class]({{< relref "install.md" >}}#picking-a
 for the kustomize layout, and [howto.md → Warm pool]({{< relref "install.md" >}}#warm-pool)
 for tuning the pool size.
 
-Build the server binary:
+Get the server binary. Either download a pre-built release — no Go
+toolchain required, available for `linux/amd64`, `linux/arm64`,
+`darwin/amd64`, `darwin/arm64`, `windows/amd64`:
+
+```bash
+# Linux x86_64; change the suffix for your platform
+curl -fL -o ./bin/mcp-server \
+  https://github.com/gke-demos/go-runtime-sandbox/releases/latest/download/mcp-server-linux-amd64
+chmod +x ./bin/mcp-server
+```
+
+…or build from source:
 
 ```bash
 go build -o ./bin/mcp-server ./cmd/mcp-server

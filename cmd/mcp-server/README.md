@@ -16,8 +16,25 @@ its source at [`../../docs/site/content/docs/mcp.md`](../../docs/site/content/do
 
 ## Usage
 
+Get the binary. Either download a pre-built release (no Go toolchain
+required) — released for `linux/amd64`, `linux/arm64`, `darwin/amd64`,
+`darwin/arm64`, `windows/amd64`:
+
+```bash
+curl -fL -o ./bin/mcp-server \
+  https://github.com/gke-demos/go-runtime-sandbox/releases/latest/download/mcp-server-linux-amd64
+chmod +x ./bin/mcp-server
+```
+
+…or build from source:
+
 ```bash
 go build -o ./bin/mcp-server ./cmd/mcp-server
+```
+
+Then:
+
+```bash
 ./bin/mcp-server --help
 ```
 
