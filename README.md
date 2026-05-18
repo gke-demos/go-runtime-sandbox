@@ -10,8 +10,8 @@ the output, iterates.
 
 ```
 ┌────────────────┐   stdio MCP    ┌──────────────────┐   port-forward   ┌────────────────────┐
-│  Claude / any  │ ────────────▶ │  cmd/mcp-server  │ ──────────────▶ │  sandbox pod (gVisor)  │
-│  MCP client    │   run_go_code  │  (pkg/goruntime) │     HTTP :8888   │  server + Go toolchain │
+│  Any MCP       │ ────────────▶ │  cmd/mcp-server  │ ──────────────▶ │  sandbox pod (gVisor)  │
+│  client        │   run_go_code  │  (pkg/goruntime) │     HTTP :8888   │  server + Go toolchain │
 └────────────────┘                └──────────────────┘                  └────────────────────┘
 ```
 
