@@ -39,6 +39,14 @@ linters:
         - name: import-shadowing
   exclusions:
     generated: lax
+    rules:
+      # Test files and the standalone smoke client lean on duplicated
+      # string literals (filenames, JSON keys) for readability; goconst's
+      # noise outweighs the benefit of extracting them to constants.
+      - linters: [goconst]
+        path: _test\.go
+      - linters: [goconst]
+        path: cmd/mcp-smoke-test/
     paths:
       - third_party$
       - builtin$
