@@ -48,7 +48,7 @@ func runShell(ctx context.Context, workdir, command string) (stdout, stderr stri
 		} else {
 			exitCode = -1
 			if errBuf.Len() == 0 {
-				errBuf.Write([]byte(err.Error()))
+				_, _ = errBuf.Write([]byte(err.Error()))
 			}
 		}
 	}

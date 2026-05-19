@@ -99,7 +99,7 @@ func handleUpload(workdir string, log *slog.Logger) http.HandlerFunc {
 			writeError(w, http.StatusBadRequest, `missing "file" form field: `+err.Error())
 			return
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 
 		name := filepath.Base(header.Filename)
 		if name == "" || name == "." || name == ".." {
@@ -112,7 +112,7 @@ func handleUpload(workdir string, log *slog.Logger) http.HandlerFunc {
 			writeError(w, http.StatusInternalServerError, "failed to create file: "+err.Error())
 			return
 		}
-		defer out.Close()
+		defer func() { _ = out.Close() }()
 		n, err := io.Copy(out, file)
 		if err != nil {
 			writeError(w, http.StatusInternalServerError, "failed to write file: "+err.Error())
@@ -160,7 +160,7 @@ func handleDownload(workdir string) http.HandlerFunc {
 			writeError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		w.Header().Set("Content-Type", "application/octet-stream")
 		http.ServeContent(w, r, info.Name(), info.ModTime(), f)
 	}

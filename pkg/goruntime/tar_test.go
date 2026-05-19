@@ -84,10 +84,10 @@ func TestParentDirs(t *testing.T) {
 
 func TestBuildTarRoundTrip(t *testing.T) {
 	files := map[string][]byte{
-		"go.mod":          []byte("module example.com/m\ngo 1.26\n"),
-		"main.go":         []byte("package main\nfunc main(){}\n"),
-		"greet/greet.go":  []byte("package greet\nfunc Hello() string { return \"hi\" }\n"),
-		"deep/a/b/x.txt":  []byte("x"),
+		"go.mod":         []byte("module example.com/m\ngo 1.26\n"),
+		"main.go":        []byte("package main\nfunc main(){}\n"),
+		"greet/greet.go": []byte("package greet\nfunc Hello() string { return \"hi\" }\n"),
+		"deep/a/b/x.txt": []byte("x"),
 	}
 	archive, err := buildTar(files)
 	if err != nil {

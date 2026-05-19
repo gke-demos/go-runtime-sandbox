@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-var errAccessDenied = errors.New("Access denied: Path must be within workdir")
+var errAccessDenied = errors.New("access denied: path must be within workdir")
 
 // resolveSafe decodes the percent-encoded URL segment, joins it onto workdir,
 // resolves symlinks, and verifies the result is contained within workdir.

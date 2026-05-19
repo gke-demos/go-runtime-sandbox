@@ -97,8 +97,8 @@ func main() {
 // RunGoCodeArgs is the input schema for the run_go_code tool. JSON
 // schema tags drive the descriptions the LLM sees.
 type RunGoCodeArgs struct {
-	Files map[string]string `json:"files,omitempty" jsonschema:"files to write under /app before running the command, keyed by relative path (e.g. 'main.go', 'greet/greet.go'). Existing files not in this map are left alone. Omit to run a command against existing sandbox state."`
-	Command string `json:"command" jsonschema:"shell command run via 'sh -c' in /app. Examples: 'go run main.go', 'go test ./...', 'go build -o app . && ./app'. State persists across calls."`
+	Files   map[string]string `json:"files,omitempty" jsonschema:"files to write under /app before running the command, keyed by relative path (e.g. 'main.go', 'greet/greet.go'). Existing files not in this map are left alone. Omit to run a command against existing sandbox state."`
+	Command string            `json:"command" jsonschema:"shell command run via 'sh -c' in /app. Examples: 'go run main.go', 'go test ./...', 'go build -o app . && ./app'. State persists across calls."`
 }
 
 type sessionHolder struct {

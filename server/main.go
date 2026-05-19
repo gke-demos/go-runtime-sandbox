@@ -104,7 +104,7 @@ func writable(dir string) error {
 	if err != nil {
 		return err
 	}
-	probe.Close()
+	_ = probe.Close()
 	return os.Remove(probe.Name())
 }
 

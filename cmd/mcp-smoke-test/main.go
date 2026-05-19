@@ -54,7 +54,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("connect: %v", err)
 	}
-	defer session.Close()
+	defer func() { _ = session.Close() }()
 
 	tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {
@@ -79,9 +79,9 @@ func main() {
 
 	check(call(ctx, session, "multi-file build+run", map[string]any{
 		"files": map[string]string{
-			"go.mod":         "module example.com/multi\ngo 1.26\n",
-			"main.go":        "package main\nimport (\"fmt\"; \"example.com/multi/sub\")\nfunc main(){ fmt.Println(sub.Msg()) }\n",
-			"sub/sub.go":     "package sub\nfunc Msg() string { return \"hi from sub-package\" }\n",
+			"go.mod":     "module example.com/multi\ngo 1.26\n",
+			"main.go":    "package main\nimport (\"fmt\"; \"example.com/multi/sub\")\nfunc main(){ fmt.Println(sub.Msg()) }\n",
+			"sub/sub.go": "package sub\nfunc Msg() string { return \"hi from sub-package\" }\n",
 		},
 		"command": "rm -f app && go build -o app . && ./app",
 	}))
